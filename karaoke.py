@@ -10,7 +10,6 @@ import json
 import urllib
 
 
-
 def print_lista(lista):
     for linea in lista:
         atrib = ""
@@ -21,6 +20,7 @@ def print_lista(lista):
         else:
             etiq = linea
 
+
 def URL_finder(lista):
 
     URL_l = []
@@ -29,9 +29,9 @@ def URL_finder(lista):
         if isinstance(linea, dict):
             for elem in linea:
                 if elem == "src":
-                   URL_l.append(linea[elem])
+                    URL_l.append(linea[elem])
     return URL_l
- 
+
 
 def URL_files(u_l):
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     URL_list = URL_finder(lista)
     URL_files(URL_list)
-    
+
     fich_json = open('karaoke.json', 'w')
     json.dump(lista, fich_json, sort_keys=True, indent=4, separators=(',', ':'))
     fich_json.close()
