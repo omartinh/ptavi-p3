@@ -7,6 +7,7 @@ from smallsmilhandler import SmallSMILHandler
 
 import sys
 import json
+import urllib
 
 
 def print_lista(lista):
@@ -36,5 +37,5 @@ if __name__ == "__main__":
     print_lista(lista)
 
     fich_json = open('karaoke.json', 'w')
-    json.dump(lista, fich_json,sort_keys = True, indet = 4, separators=(',',':'))
+    json.dump(lista, fich_json, sort_keys=True, indent=4, separators=(',',':'))
     fich_json.close()
