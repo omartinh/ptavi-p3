@@ -10,38 +10,45 @@ import json
 import urllib
 
 
-def print_lista(lista):
-    for linea in lista:
+class KaraokeLocal(SmallSMILHandler):
+
+    def __init__(self, fich):
+
+        parser = make_parser()
+        cHandler = SmallSMILHandler()
+        parser.setContentHandler(cHandler)
+        parser.parse(open(fich))
+        self.lista = SmallSMILHandler.get_tags(cHandler)
+
+    def __str__(self):
+
         atrib = ""
-        if isinstance(linea, dict):
-            for elem in linea:
-                atrib = atrib + elem + "=" + linea[elem] + "\t"
-            print(etiq + "\t" + atrib)
+        for linea in self.lista:
+            if isinstance(linea, dict):
+                for elem in linea:
+                    atrib = atrib + elem + "=" + linea[elem] + "\t"
+                atrib = atrib + "\n"
+            else:
+                atrib = atrib + linea + "\t"
+        return(atrib)
+
+    def to_json(self, fich, new_fich=""):
+        if new_fich == "":
+            nf = fich[:fich.find('.')]
         else:
-            etiq = linea
+            nf = new_fich
+        fich_json = open(nf + '.json', 'w')
+        json.dump(self.lista, fich_json, sort_keys=True, indent=4, separators=(',', ':'))
+        fich_json.close()
 
+    def do_local(self):
+        for linea in self.lista:
+            if isinstance(linea, dict):
+                if 'src' in linea:
+                    if linea['src'] != 'cancion.ogg':
+                        local = linea['src'].split("/")[-1]
+                        urllib.request.urlretrieve(linea['src'], local)
 
-def URL_finder(lista):
-
-    URL_l = []
-
-    for linea in lista:
-        if isinstance(linea, dict):
-            for elem in linea:
-                if elem == "src":
-                    URL_l.append(linea[elem])
-    return URL_l
-
-
-def URL_files(u_l):
-
-    for linea in u_l:
-        f_l = linea.split("/")
-        url_file = f_l[-1]
-        try:
-            urllib.request.urlretrieve(linea, url_file)
-        except ValueError:
-            sys.exit("Not URL file")
 
 if __name__ == "__main__":
 
@@ -50,17 +57,13 @@ if __name__ == "__main__":
     except:
         sys.exit("Usage: Python3 karaoke.py file.smil")
 
-    parser = make_parser()
-    cHandler = SmallSMILHandler()
-    parser.setContentHandler(cHandler)
-    parser.parse(open(fich))
-    lista = SmallSMILHandler.get_tags(cHandler)
+    try:
+        karaoke = KaraokeLocal(fich)
+    except FileNotFoundError:
+        sys.exit("Error: File not found")
 
-    print_lista(lista)
-
-    URL_list = URL_finder(lista)
-    URL_files(URL_list)
-
-    fich_json = open('karaoke.json', 'w')
-    json.dump(lista, fich_json, sort_keys=True, indent=4, separators=(',', ':'))
-    fich_json.close()
+    print(karaoke)
+    karaoke.to_json(fich)
+    karaoke.do_local()
+    karaoke.to_json(fich, 'local')
+    print(karaoke)
