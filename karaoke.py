@@ -6,6 +6,7 @@ from xml.sax.handler import ContentHandler
 from smallsmilhandler import SmallSMILHandler
 
 import sys
+import json
 
 
 def print_lista(lista):
@@ -33,3 +34,7 @@ if __name__ == "__main__":
     lista = SmallSMILHandler.get_tags(cHandler)
 
     print_lista(lista)
+
+    fich_json = open('karaoke.json', 'w')
+    json.dump(lista, fich_json,sort_keys = True, indet = 4, separators=(',',':'))
+    fich_json.close()
