@@ -7,7 +7,6 @@ from smallsmilhandler import SmallSMILHandler
 
 import sys
 import json
-import urllib
 
 
 def print_lista(lista):
